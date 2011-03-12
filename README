@@ -2,6 +2,7 @@ A collection of various puppet modules
 in use at Opera for different projects,
 and on my personal machines.
 
+These modules mostly target Debian and Ubuntu.
 Not all of them are fully functional.
 Most of them are though :)
 
