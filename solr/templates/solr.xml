@@ -1,0 +1,15 @@
+<Context
+    docBase="<%= solr_home %>/webapps/solr.war"
+    debug="0"
+    privileged="true"
+    allowLinking="true"
+    crossContext="true">
+
+    <Environment
+        name="solr/home"
+        type="java.lang.String"
+        value="<%= solr_home %>"
+        override="true"/>
+
+</Context>
+

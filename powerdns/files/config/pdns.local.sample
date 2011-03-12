@@ -1,0 +1,47 @@
+# Here come the local changes the user made, like configuration of 
+# the several backends that exist.
+
+master=yes
+
+# If backends don't answer CNAME queries, pdns won't send us CNAMEs
+skip-cname=yes
+
+# How many backends pdns will start
+distributor-threads=8
+
+local-address=0.0.0.0
+
+log-dns-details=yes
+log-failed-updates=no
+logfile=/var/log/pdns.log
+loglevel=6
+use-logfile=yes
+
+#
+# Cache related settings
+#
+
+# Main packet-level cache (not sure if zero is correct here)
+cache-ttl=0
+
+# How long pdns will cache hosts the backends don't know about
+# like failed queries, unknown hosts, etc...
+negquery-cache-ttl=900
+
+# How long pdns will cache our backend answers
+query-cache-ttl=0
+
+#
+# Monitoring webserver
+#
+webserver=yes
+webserver-address=0.0.0.0
+webserver-password=somepass
+webserver-port=81
+
+#
+# If you're using pipe backends
+#
+launch=pipe
+pipe-command=/path/to/pipe/command
+

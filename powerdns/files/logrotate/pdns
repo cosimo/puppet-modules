@@ -1,0 +1,12 @@
+/var/log/pdns.log* {
+  missingok
+  create 0644 pdns pdns
+  compress
+  rotate 4
+
+  postrotate
+    [ -e /etc/init.d/powerdns ] && /etc/init.d/pdns reload >/dev/null 2>&1 || true
+    [ -e /etc/init.d/powerdns ] && /etc/init.d/pdns reload > /dev/null 2>&1 || true
+  endscript
+}
+

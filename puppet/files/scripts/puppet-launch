@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# Launch a puppet client for a one-shot run
+# Usage:
+#    puppet-launch
+#
+
+/usr/sbin/puppetd --no-daemonize --ignorecache --verbose --onetime --pluginsync $@
+

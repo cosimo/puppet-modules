@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# Bootstrap a puppet client
+#
+# Usage:
+#     ./puppet-bootstrap <puppetmaster-hostname>
+#
+
+SERVER=$1
+
+if [ "x$SERVER" = "x" -o "x$SERVER" = "x--help" ]; then
+	echo "Usage: $0 <puppetmaster-hostname>"
+	exit 1
+fi
+
+apt-get update 2>/dev/null
+apt-get install puppet 2>/dev/null
+update-rc.d -f puppet remove 2>/dev/null
+/etc/init.d/puppet stop
+killall puppet 2>/dev/null
+
+echo "Now waiting for certificate from the puppetmaster..."
+echo
+echo "Switch to the puppetmaster, then run:"
+echo "# puppetca --list"
+echo "# puppetca --sign `hostname`"
+echo
+echo "Then back here press enter. Go! "
+echo
+
+/usr/sbin/puppetd --no-daemonize --server $SERVER --waitforcert 120 --test
+
+read
+
+/usr/sbin/puppetd --no-daemonize --server $SERVER --ignorecache --noop --verbose --debug --onetime
+

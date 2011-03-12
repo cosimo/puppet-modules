@@ -1,0 +1,33 @@
+user <%= user %>;
+worker_processes <%= worker_processes %>;
+
+worker_rlimit_nofile 32768;
+#worker_cpu_affinity 0001 0010 0100 1000;
+worker_priority -2;
+
+error_log  /var/log/nginx/error.log;
+pid        /var/run/nginx.pid;
+
+events {
+    worker_connections  <%= worker_connections %>;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+
+    access_log	/var/log/nginx/access.log;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  <%= keepalive_timeout %>;
+    tcp_nodelay        on;
+
+    gzip  on;
+    gzip_disable msie6;
+
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}
+

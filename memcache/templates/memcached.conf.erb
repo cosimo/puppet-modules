@@ -1,0 +1,36 @@
+# Memcached config file
+# Cosimo 18/06/2008
+
+# Run as daemon
+-d
+
+# Enable logging
+logfile <%= logfile %>
+
+# Verbosity control
+# -v
+# -vv
+
+# Megabytes of max storage
+-m <%= size %>
+
+# Default connection port is 11211
+-p <%= port %>
+
+# Run the daemon as root
+-u <%= user %>
+
+# Specify which IP address to listen on. Default: all
+<% if address != "" %>-l <%= address %><% else %># -l<% end %>
+
+# Limit the number of simultaneous incoming connections.
+-c <%= max_connections %>
+
+# Lock down all paged memory. Consult with the README and homepage before you do this
+# -k
+
+# Return error when memory is exhausted (rather than removing items)
+# -M
+
+# Maximize core file limit
+-r

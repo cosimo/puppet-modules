@@ -1,0 +1,8 @@
+# File managed by puppet <%= puppetversion %> on <%= fqdn %>
+# Data center: <%= name %>
+<% if domain != "" %>domain <%= domain %>
+<% end %>
+<% if search != "" %>search <%= search %>
+<% end %>
+<% nameservers.each do |ns| %>nameserver <%= ns %>
+<% end %>

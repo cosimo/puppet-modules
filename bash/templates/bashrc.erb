@@ -1,0 +1,20 @@
+# Puppet managed .bashrc file
+
+<% if color == 'red' %>
+# Production prompt, red
+export PS1='\[\033[01;31m\]<%= description %>\[\033[00m\] \u@\h:\w\$ '
+<% elsif color == 'blue' %>
+# Staging prompt, blue
+export PS1='\[\033[01;34m\]<%= description %>\[\033[00m\] \u@\h:\w\$ '
+<% else %>
+# Default prompt, green
+export PS1='\[\033[01;32m\]<%= description %>\[\033[00m\] \u@\h:\w\$ '
+<% end %>
+
+# Default MySQL prompt
+export MYSQL_PS1='[<%= description %>] \v \u@\d > '
+
+umask 022
+
+export LC_ALL=C
+export LANG=en_US.UTF-8
