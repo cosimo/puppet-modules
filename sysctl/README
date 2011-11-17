@@ -1,0 +1,27 @@
+Puppet module for sysctl
+========================
+
+Usage:
+
+    include sysctl
+
+    sysctl::settings { "10-vm-swappiness":
+        content => "vm.swappiness = 5"
+    }
+
+    sysctl::settings { "varnish-performance":
+        priority => 20,
+        source => "puppet:///files/some/path",
+    }
+
+There's also some preset files. For example:
+
+    sysctl::lvs_direct_routing { "lvs-dr":
+        ensure => "present"
+    }
+
+    sysctl::tcp_performance { "your-name-here":
+        ensure => "present",
+        priority => 25,
+    }
+
