@@ -1,0 +1,14 @@
+check process apache with pidfile /var/run/apache2.pid
+  start program = "/etc/init.d/apache2 start" with timeout 60 seconds
+  stop program  = "/etc/init.d/apache2 stop"
+  if failed host my.host.name port 80 protocol http
+     and request "/"
+     then restart
+
+check process jenkins with pidfile /var/run/jenkins/jenkins.pid
+  start program = "/etc/init.d/jenkins start" with timeout 90 seconds
+  stop program  = "/etc/init.d/jenkins stop"
+  if failed host my.host.name port 8080 protocol http
+     and request "/"
+     then restart
+
