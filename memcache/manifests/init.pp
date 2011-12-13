@@ -41,7 +41,7 @@ class memcache {
 
 }
 
-define memcache::config ($address = "", $port = "11211", $size = "512", $max_connections = "1024", $user = "root", $logfile = "/var/log/memcached") {
+define memcache::config ($address = "", $port = "11211", $size = "512", $max_connections = "8192", $user = "root", $logfile = "/var/log/memcached") {
 
     include memcache
 
