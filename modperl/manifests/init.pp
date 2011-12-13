@@ -3,6 +3,9 @@ class modperl {
     include apache
     include perl
 
+    #apache::mpm { "worker":
+    #    ensure => "absent"
+    #}
     apache::mpm { "prefork": }
 
     #apache::module { "deflate":
