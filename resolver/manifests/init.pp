@@ -1,4 +1,4 @@
-define resolver::dns ($nameservers, $search="", $domain="") {
+define resolver::dns ($nameservers, $search="", $domain="", $rotate="") {
 
     file { "/etc/resolv.conf":
         ensure => "present",
