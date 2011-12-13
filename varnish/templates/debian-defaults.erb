@@ -9,6 +9,9 @@
 # to be set from this shell script fragment.
 #
 
+# Needed for squeeze stock init script
+START=yes
+
 # Maximum number of open files (for ulimit -n)
 NFILES=131072
 
@@ -109,17 +112,16 @@ DAEMON_OPTS="-a ${VARNISH_LISTEN_ADDRESS}:${VARNISH_LISTEN_PORT} \
              -f ${VARNISH_VCL_CONF} \
              -T ${VARNISH_ADMIN_LISTEN_ADDRESS}:${VARNISH_ADMIN_LISTEN_PORT} \
              -t ${VARNISH_TTL} \
-             -h classic,500009 \
              -p listen_depth=2048 \
              -p lru_interval=5 \
              -p cli_timeout=20 \
              -p thread_pools=<%= thread_pools %> \
              -p thread_pool_add_delay=2 \
-             -p obj_workspace=<%= obj_workspace %> \
              -p sess_workspace=<%= sess_workspace %> \
              -p session_linger=50 \
              -p sess_timeout=<%= sess_timeout %> \
-             -w ${VARNISH_MIN_THREADS},${VARNISH_MAX_THREADS},${VARNISH_THREAD_TIMEOUT} \
+<% if cc_command %>             -p 'cc_command=<%= cc_command %>' \
+<% end %>            -w ${VARNISH_MIN_THREADS},${VARNISH_MAX_THREADS},${VARNISH_THREAD_TIMEOUT} \
              -s ${VARNISH_STORAGE}"
 
 ## Alternative 4, Do It Yourself

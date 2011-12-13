@@ -9,7 +9,7 @@ class varnish {
         owner => "root",
         group => "root",
         mode => 0755,
-        source => "puppet:///varnish/varnish-init",
+        source => "puppet:///modules/varnish/varnish-init",
         require => Package["varnish"],
     }
 
@@ -18,8 +18,19 @@ class varnish {
         ensure => "present",
         owner  => "root",
         group  => "root",
-        mode   => 644,
-        source => "puppet:///varnish/sysctl.conf.lenny",
+        mode   => 0644,
+        source => [
+            "puppet:///modules/varnish/sysctl.conf.$lsbdistcodename",
+            "puppet:///modules/varnish/sysctl.conf",
+        ],
+    }
+
+    file { "/usr/share/varnish/purge-cache":
+        ensure => "present",
+        owner  => "root",
+        group  => "root",
+        mode   => 0755,
+        source => "puppet:///modules/varnish/purge-cache",
     }
 
     exec { "update-sysctl":
@@ -29,9 +40,13 @@ class varnish {
     }
 
     service { "varnish":
-       ensure => "running",
-       require => [ Package["varnish"], File["/etc/init.d/varnish"], File["/etc/sysctl.conf"] ],
-       subscribe => Package["varnish"],
+        ensure => "running",
+        require => [
+            Package["varnish"],
+            File["/etc/init.d/varnish"],
+            File["/etc/sysctl.conf"]
+        ],
+        subscribe => Package["varnish"],
     }
 
     munin::plugin::custom { "varnish_": }
@@ -57,15 +72,15 @@ define varnish::config (
     $vcl_conf="default.vcl",
     $listen_address="",
     $listen_port=6081,
-    $thread_min=200,
+    $thread_min=400,
     $thread_max=5000,
     $thread_timeout=30,
     $storage_type="malloc",
     $storage_size="12G",
     $ttl=60,
     $thread_pools=$processorcount,
-    $obj_workspace=8192,
-    $sess_workspace=32768,
+    $sess_workspace=131072,
+    $cc_command="",
     $sess_timeout=3
 ) {
 

@@ -47,11 +47,11 @@ DAEMON_OPTS=${DAEMON_OPTS:--b localhost}
 case "$1" in
 	start)
 		output=$(/bin/tempfile -s.varnish)
-		log_daemon_msg "Starting $DESC" 
+		log_daemon_msg "Starting $DESC"
 		log_progress_msg $NAME
-                if start-stop-daemon \
+                if bash -c "start-stop-daemon \
 		   --start --quiet --pidfile ${PIDFILE} --exec ${DAEMON} -- \
-                   -P ${PIDFILE} ${DAEMON_OPTS} > ${output} 2>&1; then
+                   -P ${PIDFILE} ${DAEMON_OPTS} > ${output} 2>&1"; then
 			log_end_msg 0
 		else
 			log_end_msg 1
