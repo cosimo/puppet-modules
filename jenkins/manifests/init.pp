@@ -35,9 +35,17 @@ class jenkins {
         source => "puppet:///modules/jenkins/apache-vhost",
     }
 
+    # TAP::Harness::JUnit deps
+    package { [ "libxml-simple-perl", "libtest-deep-perl" ]:
+        ensure => "installed",
+    }
+
     file { "/etc/sudoers.d/jenkins-nopasswd":
         ensure => "present",
-        source => "puppet:///modules/jenkins/sudo-rule",
+        source => "puppet:///modules/jenkins/sudoers-rule",
+        owner  => "root",
+        group  => "root",
+        mode   => 0440,
         # base_packages also contains 'sudo'
         require => Class["base_packages"],
     }

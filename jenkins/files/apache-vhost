@@ -8,5 +8,5 @@
 		Allow from all
 	</Proxy>
 	ProxyPreserveHost on
-	ProxyPass / http://localhost:8080/
+	ProxyPass / http://localhost:8080/ connectiontimeout=10 timeout=300
 </VirtualHost>
