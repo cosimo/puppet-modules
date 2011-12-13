@@ -1,13 +1,18 @@
 class wget {
-    package { "wget":
-        ensure => "installed",
-    }
+
+    #defined in base_packages
+    #package { "wget":
+    #    ensure => "installed",
+    #}
 }
 
-define wget::download($url, $dest_file) {
+define wget::download(
+       $source,
+       $target
+) {
     exec { "wget-download-$name":
-        command => "/usr/bin/wget --no-check-certificate -O $dest_file $url 2>/dev/null",
-        creates => $dest_file,
+        command => "/usr/bin/wget --no-check-certificate -O $target $source 2>/dev/null",
+        creates => $target,
         require => Package["wget"],
     }
 }
