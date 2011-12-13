@@ -1,0 +1,166 @@
+#!/bin/sh
+
+# purge-cache: Script to purge varnish cache. Defaults are defined in
+# /etc/default/varnish.
+#
+# Cosimo <cosimo@opera.com>
+# Base taken from reload-vcl, by Stig Sandbeck Mathisen <ssm@debian.org>
+
+# Settings
+defaults=/etc/default/varnish
+
+# Paths
+varnishadm=/usr/bin/varnishadm
+date=/bin/date
+tempfile=/bin/tempfile
+
+# Messages
+# msg_no_varnishadm: varnishadm
+msg_no_varnishadm="Error: Cannot execute %s\n"
+msg_no_management="Error: \$DAEMON_OPTS must contain '-T hostname:port'\n"
+# msg_defaults_not_readable: defaults
+msg_defaults_not_readable="Error: %s is not readable\n"
+# msg_defaults_not_there: defaults
+msg_defaults_not_there="Error: %s does not exist\n"
+msg_usage="Usage: $0 [-h][-q][-u <url>|-r <regex>|-a]\n\t-h\tdisplay help\n\t-q\tbe quiet\n\t-u\tpurge by exact (relative) url (ex.: /en/products/)\n\t-r\tpurge objects with URL matching a regex (ex.: ^/blogs/)\n\t-a\tpurge all objects from cache\n"
+msg_purge_failed="Error: purge command failed\n"
+# msg_purge_url: url
+msg_purge_url="Purging objects by exact url: %s\n"
+# msg_purge_regex: regex 
+msg_purge_regex="Purging objects with URL matching regex: %s\n"
+msg_purge_all="Purging all cache\n"
+msg_purge_ok="Purge command successful\n"
+
+# Load defaults file
+if [ -f "$defaults" ]
+then
+    if [ -r "$defaults" ]
+    then
+	. "$defaults"
+    else
+	printf >&2 "$msg_defaults_not_readable" $defaults
+	exit 1
+    fi
+else
+    printf >&2 "$msg_defaults_not_there" $defaults
+    exit 1
+fi
+
+# parse command line arguments
+while getopts hqu:r:a flag
+do
+    case $flag in
+	h)
+	    printf >&2 "$msg_usage"
+	    exit 0
+	    ;;
+	u)
+	    purge_method=url
+        url="$OPTARG"
+	    ;;
+	r)
+	    purge_method=regex
+        regex="$OPTARG"
+	    ;;
+	a)
+	    purge_method=all
+	    ;;
+	q)
+	    quiet=1
+	    ;;
+	*)
+	    printf >&2 "$msg_usage\n"
+	    exit 1
+	    ;;
+    esac
+done
+
+# Parse $DAEMON_OPTS (options must be kept in sync with varnishd).
+# Extract the -f and the -T option, and (try to) ensure that the
+# management interface is on the form hostname:address
+OPTIND=1
+while getopts a:b:dFf:g:h:l:n:P:p:s:T:t:u:Vw: flag $DAEMON_OPTS
+do
+    case $flag in
+	f)
+	    if [ -f "$OPTARG" ]; then
+		vcl_file="$OPTARG"
+	    fi
+	    ;;
+	T)
+	    if [ -n "$OPTARG" -a "$OPTARG" != "${OPTARG%%:*}" ]
+		then
+		mgmt_interface="$OPTARG"
+	    fi
+	    ;;
+    esac
+done
+
+# Sanity checks
+if [ ! -x "$varnishadm" ]
+then
+    printf >&2 "$msg_no_varnishadm" $varnishadm
+    exit 1
+fi
+
+if [ -z "$mgmt_interface" ]
+then
+    printf >&2 "$msg_no_management"
+    exit 1
+fi
+
+logfile=$($tempfile)
+purge_command="vcl.list"
+
+# Now run the purge command against the admin interface
+if [[ $purge_method = "url" ]]
+then
+	purge_command="purge req.url == $url"
+	printf >&2 "$msg_purge_url" $url | grep -v "^$" > $logfile
+else
+    if [[ $purge_method = "regex" ]]
+    then
+        purge_command="purge.url $regex"
+        printf >&2 "$msg_purge_regex" $regex | grep -v "^$" > $logfile
+    else
+        if [[ $purge_method = "all" ]]
+        then
+            purge_command="purge.url ."
+            printf >&2 "$msg_purge_all" | grep -v "^$" > $logfile
+        fi
+    fi
+fi
+
+# For some reason, using:
+#
+#   fi | grep -v "^$" > $logfile
+#
+# results in purge_command assignment being wiped out
+# at the end of the block??
+
+if [ -z "$purge_command" ]
+then
+    printf >&2 "$msg_usage\n"
+    exit 1
+fi
+
+# echo "cmd: $varnishadm -T $mgmt_interface $purge_command"
+
+if $varnishadm -T $mgmt_interface $purge_command
+then
+    printf >&2 "$msg_purge_ok"
+else
+    printf >&2 "$msg_purge_failed"
+    exitstatus=1
+fi | grep -v "^$" > $logfile
+
+# Blather
+if [ -z "${quiet}" -o -n "$exitstatus" ]
+then
+    cat >&2 $logfile
+fi
+
+# Cleanup
+rm -f $logfile
+exit $exitstatus
+
