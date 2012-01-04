@@ -1,0 +1,23 @@
+Puppet module for timezone
+==========================
+
+Usage:
+
+    include timezone
+
+If you want to set a different timezone,
+I think you should be able to do:
+
+    class { "timezone":
+        timezone => "Europe/Oslo"
+    }
+
+Or:
+
+    class { "timezone":
+        timezone => "America/Los_Angeles"
+    }
+
+Be sure that whatever you use as $timezone
+actually exists in `/usr/share/zoneinfo/$timezone`.
+
