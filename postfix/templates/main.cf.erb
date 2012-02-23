@@ -1,0 +1,72 @@
+# Managed by puppet. Edits will be lost.
+
+# $Revision$
+
+#-------------------------------------------------------
+# Postfix config for smtp delivery only
+#
+# Used by application servers to drop mail locally
+# and have it delivered externally
+#-------------------------------------------------------
+
+queue_directory = /var/spool/postfix
+command_directory = /usr/sbin
+mail_owner = postfix
+default_privs = nobody
+
+sendmail_path = /usr/sbin/sendmail
+manpage_path = /usr/local/man
+setgid_group = postdrop
+newaliases_path = /usr/bin/newaliases
+mailq_path = /usr/bin/mailq
+
+readme_directory = no
+sample_directory = /etc/postfix
+manpage_directory = /usr/local/man
+html_directory = no
+
+# This defaults to gethostname(), see postconf(5)
+#myhostname =
+<% if mydomain %>
+mydomain = <%= mydomain %>
+myorigin = $mydomain
+<% end %>
+
+# postfix normally adds @$myorigin to any To/Cc email addresses
+# that don't have a domain part. Don't want that
+# so we just set no rewrite clients
+local_header_rewrite_clients =
+append_dot_mydomain = no
+
+# Trusted networks we'll relay email from
+mynetworks = 127.0.0.1 10.0.0.0/8
+
+# Domains that will deliver locally rather than forwarding
+mydestination =
+
+<% if relayhost %>
+relayhost = <%= relayhost %>
+<% else %>
+# relayhost = [your.relay.host.here]:25
+<% end %>
+
+# Increase sending timeout limits because of dumb receiving hosts
+transport_retry_time = 20s
+stale_lock_time = 180s
+smtp_connect_timeout = 190s
+smtp_helo_timeout = 190s
+smtp_mail_timeout = 190s
+smtp_rcpt_timeout = 190s
+smtp_data_xfer_timeout = 190s
+smtp_quit_timeout = 30s
+max_idle = 30s
+
+# How long emails are queued for. Never want warnings about delays
+maximal_queue_lifetime = 24h
+delay_warning_time = 0h
+
+# Drop bounce emails if they bounce
+bounce_queue_lifetime = 0
+
+# To test that outgoing mail is going through
+# always_bcc = someone@domain.tld
