@@ -1,0 +1,21 @@
+Puppet module for rsyslog
+=========================
+
+Usage:
+
+    include rsyslog
+
+This module is implemented so we have not only
+the package installed, but also rsyslog always
+guaranteed to be running.
+
+You can also add configuration snippets with
+a define like:
+
+    include rsyslog
+
+    rsyslog::conf { "someproject-somename":
+        content => "..."
+        #  or
+        #source => "puppet:///...",
+    }
