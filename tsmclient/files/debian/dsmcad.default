@@ -1,0 +1,4 @@
+# This is needed to back up filenames with utf chars.
+
+LC_CTYPE=en_US ; export LC_CTYPE
+LANG=en_US ; export LANG

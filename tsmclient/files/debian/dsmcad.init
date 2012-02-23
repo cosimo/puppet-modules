@@ -1,0 +1,59 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:        dsmcad
+# Required-Start:  $network
+# Required-Stop:   $network
+# Default-Start:   2 3 4 5
+# Default-Stop:    0 1 6
+# Short-Description: Start Tivoli storage client daemon
+### END INIT INFO
+
+PATH=/opt/tivoli/tsm/client/ba/bin:/sbin:/bin:/usr/sbin:/usr/bin:
+
+. /lib/lsb/init-functions
+
+DAEMON=/opt/tivoli/tsm/client/ba/bin/dsmcad
+PIDFILE=/var/run/dsmcad.pid
+
+test -x $DAEMON || exit 5
+
+if [ -r /etc/default/dsmcad ]; then
+	. /etc/default/dsmcad
+fi
+
+case $1 in
+	start)
+		log_daemon_msg "Starting Tivoli server" "dsmcad"
+		mkdir -p /var/log/tsm
+		ldconfig
+  		start-stop-daemon --start --pidfile $PIDFILE --exec $DAEMON
+	        sleep 3
+                pidof $DAEMON > $PIDFILE
+		status=$?
+		log_end_msg $status
+  		;;
+	stop)
+		log_daemon_msg "Stopping Tivoli server" "dsmcad"
+  		start-stop-daemon --stop --oknodo --pidfile $PIDFILE --retry 30 --exec $DAEMON
+		log_end_msg $?
+		rm -f $PIDFILE
+  		;;
+	restart|force-reload|reload)
+		$0 stop && sleep 2 && $0 start
+  		;;
+	try-restart)
+		if $0 status >/dev/null; then
+			$0 restart
+		else
+			exit 0
+		fi
+		;;
+	status)
+		status_of_proc $DAEMON "dsmcad server"
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart|try-restart|force-reload|status}"
+		exit 2
+		;;
+esac
