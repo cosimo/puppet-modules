@@ -5,7 +5,10 @@ class base_packages {
         "bc",
         "bzip2",
         "colordiff",
-        "curl",        # Required by common, required by apt
+        "curl",            # Required by common, required by apt
+        "debconf",
+        "debconf-utils",   # Required to use debconf-{get,set}-selections
+        "dmidecode",
         "dnsutils",
         "ethtool",
         "facter",
@@ -23,7 +26,6 @@ class base_packages {
         "joe",
         "less",
         "libwww-perl",
-        "logcheck",
         "logrotate",
         "lsb-release",
         "lsof",
@@ -42,7 +44,6 @@ class base_packages {
         "pigz",
         "psmisc",
         "rsync",
-        "rsyslog",
         "screen",
         "socat",
         "ssh",
@@ -55,7 +56,6 @@ class base_packages {
         "telnet",
         "tree",
         "trickle",
-        "tzdata",
         "unzip",
         "vim",
         "w3m",
@@ -69,4 +69,3 @@ class base_packages {
     }
 
 }
-
